@@ -42,6 +42,7 @@ jobs:
           pip install twine wheel coveralls
           pip install poetry
           poetry config virtualenvs.create false
+          pip list
       - name: Install dependencies
         run: |
           poetry install
