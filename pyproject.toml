@@ -1,0 +1,37 @@
+[tool]
+[tool.poetry]
+name = "techlib-nr-common-metadata"
+version = "3.0.0a47"
+description = "NR common data types"
+license = "MIT"
+keywords = ["National", "Repository", "common", "model", "Invenio"]
+classifiers = ["Environment :: Web Environment", "Intended Audience :: Developers", "License :: OSI Approved :: MIT License", "Operating System :: OS Independent", "Programming Language :: Python", "Topic :: Internet :: WWW/HTTP :: Dynamic Content", "Topic :: Software Development :: Libraries :: Python Modules", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3.9", "Development Status :: 3 - Alpha"]
+authors = ["Daniel Kopecký <Daniel.Kopecky@techlib.cz>", "Chaplyhin Denys <chaplyhd@vscht.cz>"]
+readme = "README.md"
+packages = [{ include = "nr_common_metadata" }]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+sphinx = { version = "^1.5.1", optional = true }
+isbnlib = "^3.10.8"
+IDUtils = "^1.1.8"
+python-stdnum = "^1.16"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.0.0"
+pytest-cov = "^2.10.1"
+oarepo = "^3.3"
+oarepo-micro-api = "^3.3.60"
+oarepo-mapping-includes = "<=1.2.0"
+oarepo-multilingual = "^2.5.0"
+oarepo-taxonomies = "^3.0.0a1"
+pytest-runner = "^5.3.0"
+
+[tool.poetry.extras]
+docs = ["sphinx"]
+
+[tool.poetry.plugins."invenio_jsonschemas.schemas"]
+"nr_common_metadata" = "nr_common_metadata.jsonschemas"
+
+[tool.poetry.plugins."oarepo_mapping_includes"]
+"nr_common_metadata" = "nr_common_metadata.mapping_includes"

@@ -1,0 +1,16 @@
+{
+  "rights": {
+    "type": "taxonomy-term",
+    "properties": {
+      "title": {
+        "type": "multilingual"
+      },
+      "icon": {
+        "type": "keyword"
+      },
+      "related_URI": {
+        "type": "keyword"
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "contributor": {
+    "type": "taxonomy-term",
+    "properties": {
+      "title": {
+        "type": "multilingual"
+      },
+      "dataCiteCode": {
+        "type": "keyword"
+      },
+      "marcCode": {
+        "type": "keyword"
+      }
+    }
+  }
+}
