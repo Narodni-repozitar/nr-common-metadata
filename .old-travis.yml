@@ -1,0 +1,37 @@
+notifications:
+  email: false
+os: linux
+dist: focal
+language: python
+matrix:
+  fast_finish: true
+cache:
+- pip
+python:
+- '3.8'
+before_install:
+- travis_retry pip install --upgrade pip setuptools py
+- travis_retry pip install twine wheel coveralls
+- pip install poetry
+- curl https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.6.2-amd64.deb
+  -o elasticsearch.deb
+- sudo dpkg -i --force-confnew elasticsearch.deb
+- sudo chown -R elasticsearch:elasticsearch /etc/default/elasticsearch
+- sudo service elasticsearch restart
+install:
+- travis_retry poetry install --extras tests
+- cat poetry.lock
+before_script:
+- sleep 10
+script:
+- "./run-tests.sh"
+after_success:
+- coveralls
+- test $TRAVIS_BRANCH = "master" && "./push-schemas.sh"
+before_deploy:
+- |-
+  SRCTAG=$(cat oarepo_taxonomies/version.py | grep '__version__' | sed 's/__version__//' | sed 's/=//g' | sed 's/"//g' | sed "s/'//g" | sed 's/[ \t\n]//g')
+  test $SRCTAG == $TRAVIS_TAG
+env:
+  global:
+    secure: SbpUkp331uvr/P53rCccLDxKqA/hJrPGZpG7I89ycqaoo5BA8JMcTXvG8RbD/MkcYeGib0AmqRfxyix/qIVFaUpqTX326Aq12nqdIHpio6HL0SX1oRRooeL5Z/14tCF/ugMLW/pyNjhbKSwCM9KP1S+Ia9cP+QtK8n8ro79doT254UTLYitx6olgclqDhfqY+Zi2HhfJA7J1SPzkf05Ygri3G3mP4vpCSdw4GvM2BI6TtJXcyPFyaklbV0GgYPZuiRCZvEjWdYsnPeE2GNPw8AMeO1SFBFDqysTAjZF8Ykg4Y2SYaAlJNsMZdRA4hPxfyU6CD2Bu0uDhJLQAswg25/Q3QUVnymtRENuqwsTKyb1shzFwpT8AXc6Wr3SxZEpCnnhiWlxGH+/8exD2nbJI1anPvkfn6+3/4MR+L3cOcw0NdIBYDJ+z5mni3N7aae6MlFvVzDQESY8SGwfFYP1Hi7VlIj01/by4TtmyVeqE6JV4IJ+sI2z1Q9steqfaLiqcxpmG9zyuPuzC5ufMMn/S3RaQFmNFdVpROatrSZMT6EQ6F5gsb51xK+oqc5HbyY3IBqkbg87CQxhs5ne7TDjnf9yNn4sV8MaLDhKDnSF7YBs3Q5j5k4Ko2vZsdi1FTqiy5h3KVlozKMMiw6lhajFBlrkLg1Kw/s84QEn9Erm3FGg=

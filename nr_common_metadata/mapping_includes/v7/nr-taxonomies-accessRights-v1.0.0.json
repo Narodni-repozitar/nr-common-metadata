@@ -1,0 +1,24 @@
+{
+  "accessRights": {
+    "type": "taxonomy-term",
+    "properties": {
+      "title": {
+        "type": "multilingual"
+      },
+      "relatedURI": {
+        "type": "object",
+        "properties": {
+          "coar": {
+            "type": "keyword"
+          },
+          "vocabs": {
+            "type": "keyword"
+          },
+          "eprint": {
+            "type": "keyword"
+          }
+        }
+      }
+    }
+  }
+}
