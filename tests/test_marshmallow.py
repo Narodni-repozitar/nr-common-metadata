@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 from marshmallow import ValidationError
 
-from nr_common.marshmallow import CommonMetadataSchemaV2
+from nr_common_metadata.marshmallow import CommonMetadataSchemaV2
 
 
 def test_required_fields(app, db, taxonomy_tree, base_json, base_json_dereferenced):

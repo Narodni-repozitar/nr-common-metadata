@@ -14,14 +14,11 @@ from invenio_records_rest.schemas.fields import SanitizedUnicode
 from marshmallow import post_load, ValidationError, pre_load
 from marshmallow.fields import Nested, Url, Boolean, List
 from marshmallow.validate import Length
-from oarepo_communities.marshmallow import OARepoCommunitiesMixin
-from oarepo_fsm.marshmallow import FSMRecordSchemaMixin
-from oarepo_invenio_model.marshmallow import InvenioRecordMetadataSchemaV1Mixin
 from oarepo_multilingual.marshmallow import MultilingualStringV2
 from oarepo_taxonomies.marshmallow import TaxonomyField
 
-from nr_common.marshmallow.fields import NRDate
-from nr_common.marshmallow.subschemas import PersonSchema, ContributorSchema, \
+from nr_common_metadata.marshmallow.fields import NRDate
+from nr_common_metadata.marshmallow.subschemas import PersonSchema, ContributorSchema, \
     WorkIdentifersSchema, FundingReferenceSchema, PublicationPlaceSchema, RelatedItemSchema, \
     TitledMixin, AccessRightsMixin, InstitutionsMixin, RightsMixin, SubjectMixin, \
     PSHMixin, CZMeshMixin, MedvikMixin, RecordIdentifier, SeriesSchema, RulesExceptionsSchema
@@ -30,8 +27,7 @@ from nr_common.marshmallow.subschemas import PersonSchema, ContributorSchema, \
 #
 
 
-class CommonMetadataSchemaV2(InvenioRecordMetadataSchemaV1Mixin, FSMRecordSchemaMixin,
-                             OARepoCommunitiesMixin, StrictKeysMixin):
+class CommonMetadataSchemaV2(StrictKeysMixin):
     """Schema for the record metadata."""
 
     abstract = MultilingualStringV2()

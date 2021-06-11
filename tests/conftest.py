@@ -34,13 +34,11 @@ from invenio_records_rest.views import create_blueprint_from_app
 from invenio_search import InvenioSearch, RecordsSearch
 from marshmallow import Schema
 from marshmallow.fields import Nested, Url, List, Boolean
-from oarepo_communities import OARepoCommunities
-from oarepo_communities.api import OARepoCommunity
 from oarepo_mapping_includes.ext import OARepoMappingIncludesExt
-from oarepo_records_draft.ext import RecordsDraft
+
 from oarepo_references import OARepoReferences
 from oarepo_references.mixins import ReferenceEnabledRecordMixin
-from oarepo_search import OARepoSearch
+
 from oarepo_taxonomies.cli import init_db
 from oarepo_taxonomies.ext import OarepoTaxonomies
 from oarepo_validate import MarshmallowValidatedRecordMixin
@@ -184,10 +182,7 @@ def app():
     InvenioRecordsREST(app)
     InvenioCelery(app)
     InvenioPIDStore(app)
-    RecordsDraft(app)
     OARepoValidate(app)
-    OARepoCommunities(app)
-    OARepoSearch(app)
     app.url_map.converters['pid'] = PIDConverter
 
     # Celery
@@ -492,7 +487,6 @@ def get_pid():
 @pytest.fixture()
 def base_json():
     return {
-        "_primary_community": "nr",
         "accessRights": [{
             "is_ancestor": False,
             "links": {
@@ -546,7 +540,6 @@ def base_json():
 @pytest.fixture()
 def base_json_dereferenced():
     return {
-        "_primary_community": "nr",
         'accessRights': [{
             'is_ancestor': False,
             'level': 1,

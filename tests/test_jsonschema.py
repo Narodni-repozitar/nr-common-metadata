@@ -9,7 +9,7 @@ def test_json(app, base_json):
     print("START")
     print(app)
     print(current_jsonschemas.list_schemas())
-    _records_state.validate(base_json, "https://nusl.cz/schemas/nr_common/nr-common-v1.0.0.json")
+    _records_state.validate(base_json, "https://nusl.cz/schemas/nr_common_metadata/nr-common-metadata-v1.0.0.json")
 
 
 def test_json_2(app, base_json):
@@ -20,4 +20,4 @@ def test_json_2(app, base_json):
     del base_json["title"]
     with pytest.raises(ValidationError):
         _records_state.validate(base_json,
-                                "https://nusl.cz/schemas/nr_common/nr-common-v1.0.0.json")
+                                "https://nusl.cz/schemas/nr_common_metadata/nr-common-metadata-v1.0.0.json")

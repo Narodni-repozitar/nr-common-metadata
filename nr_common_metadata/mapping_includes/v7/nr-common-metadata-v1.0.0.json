@@ -334,40 +334,6 @@
       },
       "title": {
         "type": "multilingual"
-      },
-      "rulesExceptions": {
-        "type": "nested",
-        "properties": {
-          "path": {
-            "type": "keyword"
-          },
-          "element": {
-            "type": "text"
-          },
-          "phase": {
-            "type": "keyword"
-          },
-          "exception": {
-            "type": "keyword"
-          }
-        }
-      },
-      "_administration": {
-        "type": "object",
-        "properties": {
-          "state": {
-            "type": "keyword"
-          },
-          "primaryCommunity": {
-            "type": "keyword"
-          },
-          "communities": {
-            "type": "keyword"
-          },
-          "owned_by": {
-            "type": "integer"
-          }
-        }
       }
     }
   }

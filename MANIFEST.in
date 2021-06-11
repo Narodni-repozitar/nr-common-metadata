@@ -16,5 +16,5 @@
 
 include .editorconfig
 prune docs/_build
-recursive-include nr_common *.po *.pot *.mo
-graft nr_common
+recursive-include nr_common_metadata *.po *.pot *.mo
+graft nr_common_metadata

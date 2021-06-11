@@ -1,7 +1,7 @@
 import pytest
 from marshmallow import Schema, ValidationError
 
-from nr_common.marshmallow.fields import NRDate, ISBN, ISSN, DOI, RIV, Year, OAI, \
+from nr_common_metadata.marshmallow.fields import NRDate, ISBN, ISSN, DOI, RIV, Year, OAI, \
     DateRange, DateString
 
 

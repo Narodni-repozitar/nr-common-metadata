@@ -3,7 +3,7 @@ import shutil
 import subprocess
 import os
 
-SOURCE_DIR = pathlib.Path(__file__).parents[1].absolute() / "nr_common"
+SOURCE_DIR = pathlib.Path(__file__).parents[1].absolute() / "nr_common_metadata"
 TARGET_DIR = pathlib.Path("/tmp/nr-schemas")
 
 
