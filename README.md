@@ -1,4 +1,4 @@
-# nr-common
+# nr-common-metadata
 
 [![Build Status](https://travis-ci.org/Narodni-repozitar/nr-common.svg?branch=master)](https://travis-ci.org/Narodni-repozitar/nr-common)
 [![Coverage Status](https://coveralls.io/repos/github/Narodni-repozitar/nr-common/badge.svg)](https://coveralls.io/github/Narodni-repozitar/nr-common)
@@ -13,7 +13,7 @@ General libraries extending [Invenio](https://github.com/inveniosoftware) are co
  Knihovna se instaluje klasicky přes pip
  
 ```bash
-pip install techlib-nr-common
+pip install techlib-nr-common-metadata
 ```
 
 Pro testování a/nebo samostané fungování knihovny je nutné instalovat tests z extras.
