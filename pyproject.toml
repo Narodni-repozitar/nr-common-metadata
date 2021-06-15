@@ -1,7 +1,7 @@
 [tool]
 [tool.poetry]
 name = "techlib-nr-common-metadata"
-version = "3.0.0a47"
+version = "3.0.0a48"
 description = "NR common data types"
 license = "MIT"
 keywords = ["National", "Repository", "common", "model", "Invenio"]
