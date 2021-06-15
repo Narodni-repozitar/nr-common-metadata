@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "id": "https://nusl.cz/schemas/nr-common-v1.0.0.json",
+  "id": "https://nusl.cz/schemas/nr-common-metadata-v1.0.0.json",
   "title": "My site v1.0.0",
   "type": "object",
   "allOf": [
