@@ -47,8 +47,8 @@ def test_NRDate_3():
         "date": "2021-07-08"
     }
     schema = TestSchema()
-    with pytest.raises(ValidationError):
-        res = schema.load(data)
+    res = schema.load(data)
+    assert res == data
 
 
 # DateRange tests
