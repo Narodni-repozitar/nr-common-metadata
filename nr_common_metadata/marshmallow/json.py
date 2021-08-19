@@ -77,15 +77,6 @@ class CommonMetadataSchemaV2(StrictKeysMixin):
         return data
 
     @post_load
-    def validate_keywords_subjects(self, data, **kwargs):
-        subject = [x for x in data.get("subject", []) if not x["is_ancestor"]]
-        keywords = data.get("keywords", [])
-        if len(keywords) + len(subject) < 3:
-            raise ValidationError("At least three subjects or keyword are required",
-                                  field_name="keywords")
-        return data
-
-    @post_load
     def copy_to_entities(self, data, **kwargs):
         entities = data.get("entities")
         if not entities:

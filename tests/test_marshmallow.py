@@ -1377,79 +1377,12 @@ class TestSubject:
         result = schema.load(base_json)
         assert result == base_json_dereferenced
 
-    def test_subject_2(self, app, db, taxonomy_tree, base_json, base_json_dereferenced):
-        del base_json["keywords"]
-        del base_json_dereferenced["keywords"]
-        content = [
-            {
-                "links": {
-                    "self": "http://127.0.0.1:5000/2.0/taxonomies/test_taxonomy/psh3001"
-                }
-            },
-            {
-                "links": {
-                    "self": "http://127.0.0.1:5000/2.0/taxonomies/test_taxonomy/psh3000"
-                }
-            }
-        ]
-        field = "subject"
-        base_json[field] = content
-        base_json_dereferenced[field] = [{
-            'DateCreated': datetime(2007, 1, 26, 16, 14,
-                                    37),
-            'DateDateEstablished': '2007-01-26T16:14:37',
-            'DateRevised': datetime(2007, 1, 26, 16, 14,
-                                    37),
-            'is_ancestor': False,
-            'links': {
-                'self':
-                    'http://127.0.0.1:5000/2.0/taxonomies/test_taxonomy/d010420'
-            },
-            'reletedURI': ['http://www.medvik.cz/link/D010420',
-                           'http://id.nlm.nih.gov/mesh/D010420'],
-            'title': {'cs': 'pentany', 'en': 'Pentanes'}
-        },
-            {
-                'DateRevised': datetime(2007, 1, 26, 16, 14,
-                                        37),
-                'is_ancestor': False,
-                'links': {
-                    'self': 'http://127.0.0.1:5000/2.0/taxonomies/test_taxonomy/psh3000'
-                },
-                'reletedURI': ['http://psh.techlib.cz/skos/PSH3000'],
-                'title': {
-                    'cs': 'turbulentní proudění',
-                    'en': 'turbulent flow'
-                }
-            }
-        ]
-        schema = CommonMetadataSchemaV2()
-        with pytest.raises(ValidationError):
-            schema.load(base_json)
-
 
 class TestKeywords:
-    def test_keywords_1(self, app, db, taxonomy_tree, base_json, base_json_dereferenced):
-        del base_json["keywords"]
-        del base_json_dereferenced["keywords"]
-        content = []
-        field = "keywords"
-        base_json[field] = content
-        base_json_dereferenced[field] = content
-        schema = CommonMetadataSchemaV2()
-        with pytest.raises(ValidationError):
-            schema.load(base_json)
-
     def test_keywords_2(self, app, db, taxonomy_tree, base_json, base_json_dereferenced):
-        del base_json["keywords"]
-        del base_json_dereferenced["keywords"]
-        content = {"error": "Some error"}
-        field = "keywords"
-        base_json[field] = content
-        base_json_dereferenced[field] = content
         schema = CommonMetadataSchemaV2()
-        with pytest.raises(ValidationError, match="Some error"):
-            schema.load(base_json)
+        result = schema.load(base_json)
+        assert result == base_json_dereferenced
 
 
 class TestTitle:
