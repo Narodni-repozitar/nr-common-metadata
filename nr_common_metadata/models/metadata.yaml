@@ -1,0 +1,52 @@
+# Copyright (c) 2022 CESNET
+#
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
+
+$defs:
+  NRAuthority:
+    properties:
+      fullName:
+        # otazka: moznost duplicity - pridat pole jmeno a prijmeni pro nove zaznamy + do ui generovani fullName podle pravidel
+        type: keyword
+        required: true
+        oarepo:sample:
+          faker: name
+
+      nameType:
+        type: keyword
+        enum: [Organizational, Personal]
+        oarepo:sample: [Organizational, Personal]
+
+      authorityIdentifiers[]:
+        # v nuslu nejsou, v IDR jsou
+        properties:
+          identifier:
+            type: keyword
+            required: true
+            oarepo:sample:
+              faker: isbn13
+          scheme:
+            type: keyword
+            required: true
+            enum:
+              [
+                orcid,
+                scopusID,
+                researcherID,
+                czenasAutID,
+                vedidk,
+                institutionalID,
+                ISNI,
+                ROR,
+                ICO,
+                DOI,
+              ]
+        uniqueItems[]: true
+
+      affiliations[]:
+        oarepo:use: '#/$defs/TaxonomyTerm'
+        $description: taxonomie institutions
+        oarepo:sample:
+          faker: company
+        uniqueItems[]: true
