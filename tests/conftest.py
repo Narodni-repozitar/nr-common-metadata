@@ -4,16 +4,12 @@ import os
 import shutil
 import sys
 import tempfile
-import uuid
 from pathlib import Path
 
 import pytest
-from elasticsearch import Elasticsearch
-from flask import Flask, make_response, url_for
+from flask import Flask, make_response
 from flask_login import LoginManager, login_user
-from flask_principal import RoleNeed, Principal, Permission
-from flask_taxonomies.proxies import current_flask_taxonomies
-from flask_taxonomies.term_identification import TermIdentification
+from flask_principal import Principal
 from invenio_access import InvenioAccess
 from invenio_accounts import InvenioAccounts
 from invenio_accounts.models import User
@@ -25,59 +21,16 @@ from invenio_indexer import InvenioIndexer
 from invenio_indexer.api import RecordIndexer
 from invenio_jsonschemas import InvenioJSONSchemas
 from invenio_pidstore import InvenioPIDStore
-from invenio_pidstore.providers.recordid import RecordIdProvider
-from invenio_records import InvenioRecords, Record
+from invenio_records import InvenioRecords
 from invenio_records_rest import InvenioRecordsREST
-from invenio_records_rest.schemas.fields import SanitizedUnicode
 from invenio_records_rest.utils import PIDConverter
 from invenio_records_rest.views import create_blueprint_from_app
 from invenio_search import InvenioSearch, RecordsSearch
-from marshmallow import Schema
-from marshmallow.fields import Nested, Url, List, Boolean
-from oarepo_mapping_includes.ext import OARepoMappingIncludesExt
 
-from oarepo_references import OARepoReferences
-from oarepo_references.mixins import ReferenceEnabledRecordMixin
-
-from oarepo_taxonomies.cli import init_db
-from oarepo_taxonomies.ext import OarepoTaxonomies
-from oarepo_validate import MarshmallowValidatedRecordMixin
-from oarepo_validate.ext import OARepoValidate
 from sqlalchemy_utils import database_exists, create_database, drop_database
 
 from tests.helpers import set_identity
 
-
-class Links(Schema):
-    self = Url()
-
-
-class ResourceType(Schema):
-    is_ancestor = Boolean()
-    links = Nested(Links)
-
-
-class TestSchema(Schema):
-    """Test record schema."""
-    title = SanitizedUnicode()
-    control_number = SanitizedUnicode()
-    resourceType = List(Nested(ResourceType))
-
-
-class TestRecord(MarshmallowValidatedRecordMixin,
-                 ReferenceEnabledRecordMixin,
-                 Record):
-    """Reference enabled test record class."""
-    MARSHMALLOW_SCHEMA = TestSchema
-    VALIDATE_MARSHMALLOW = True
-    VALIDATE_PATCH = True
-
-    @property
-    def canonical_url(self):
-        # SERVER_NAME = current_app.config["SERVER_NAME"]
-        # return f"http://{SERVER_NAME}/api/records/{self['pid']}"
-        return url_for('invenio_records_rest.recid_item',
-                       pid_value=self['pid'], _external=True)
 
 
 RECORDS_REST_ENDPOINTS = {
@@ -99,7 +52,6 @@ RECORDS_REST_ENDPOINTS = {
         record_loaders={
             'application/json': 'oarepo_validate:json_loader',
         },
-        record_class=TestRecord,
         list_route='/records/',
         item_route='/records/<pid(nr):pid_value>',
         default_media_type='application/json',
@@ -169,20 +121,16 @@ def app():
     print(os.environ.get("INVENIO_INSTANCE_PATH"))
 
     InvenioDB(app)
-    OarepoTaxonomies(app)
-    OARepoReferences(app)
     InvenioAccounts(app)
     InvenioAccess(app)
     Principal(app)
     InvenioJSONSchemas(app)
     InvenioSearch(app)
     InvenioIndexer(app)
-    OARepoMappingIncludesExt(app)
     InvenioRecords(app)
     InvenioRecordsREST(app)
     InvenioCelery(app)
     InvenioPIDStore(app)
-    OARepoValidate(app)
     app.url_map.converters['pid'] = PIDConverter
 
     # Celery
@@ -246,390 +194,3 @@ def db(app):
     # Explicitly close DB connection
     db_.session.close()
     db_.drop_all()
-
-
-@pytest.fixture
-def client(app, db):
-    from flask_taxonomies.models import Base
-    Base.metadata.create_all(db.engine)
-    return app.test_client()
-
-
-@pytest.fixture()
-def es():
-    return Elasticsearch()
-
-
-@pytest.yield_fixture
-def es_index(es):
-    index_name = "test_index"
-    if not es.indices.exists(index=index_name):
-        yield es.indices.create(index_name)
-
-    if es.indices.exists(index=index_name):
-        es.indices.delete(index_name)
-
-
-@pytest.fixture
-def permission_client(app, db):
-    app.config.update(
-        FLASK_TAXONOMIES_PERMISSION_FACTORIES={
-            'taxonomy_create': [Permission(RoleNeed('admin'))],
-            'taxonomy_update': [Permission(RoleNeed('admin'))],
-            'taxonomy_delete': [Permission(RoleNeed('admin'))],
-
-            'taxonomy_term_create': [Permission(RoleNeed('admin'))],
-            'taxonomy_term_update': [Permission(RoleNeed('admin'))],
-            'taxonomy_term_delete': [Permission(RoleNeed('admin'))],
-            'taxonomy_term_move': [Permission(RoleNeed('admin'))],
-        }
-    )
-    from flask_taxonomies.models import Base
-    Base.metadata.create_all(db.engine)
-    return app.test_client()
-
-
-@pytest.fixture
-def tax_url(app):
-    url = app.config['FLASK_TAXONOMIES_URL_PREFIX']
-    if not url.endswith('/'):
-        url += '/'
-    return url
-
-
-@pytest.fixture(scope="module")
-def taxonomy(app, db):
-    taxonomy = current_flask_taxonomies.create_taxonomy("test_taxonomy", extra_data={
-        "title":
-            {
-                "cs": "test_taxonomy",
-                "en": "test_taxonomy"
-            }
-    })
-    db.session.commit()
-    return taxonomy
-
-
-@pytest.fixture(scope="module")
-def taxonomy_tree(app, db, taxonomy):
-    # accessRights
-    id1 = TermIdentification(taxonomy=taxonomy, slug="c_abf2")
-    term1 = current_flask_taxonomies.create_term(id1, extra_data={
-        "title": {
-            "cs": "otevřený přístup",
-            "en": "open access"
-        },
-        "relatedURI": {
-            "coar": "http://purl.org/coar/access_right/c_abf2",
-            "vocabs": "https://vocabs.acdh.oeaw.ac.at/archeaccessrestrictions/public",
-            "eprint": "http://purl.org/eprint/accessRights/OpenAccess"
-        }
-    })
-
-    # resource type
-    id2 = TermIdentification(taxonomy=taxonomy, slug="bakalarske_prace")
-    term2 = current_flask_taxonomies.create_term(id2, extra_data={
-        "title": {
-            "cs": "Bakalářské práce",
-            "en": "Bachelor’s theses"
-        }
-    })
-
-    # institution
-    id3 = TermIdentification(taxonomy=taxonomy, slug="61384984")
-    term3 = current_flask_taxonomies.create_term(id3, extra_data={
-        "title": {
-            "cs": "Akademie múzických umění v Praze",
-            "en": "Academy of Performing Arts in Prague"
-        },
-        "type": "veřejná VŠ",
-        "aliases": ["AMU"],
-        "related": {
-            "rid": "51000"
-        },
-        "address": "Malostranské náměstí 259/12, 118 00 Praha 1",
-        "ico": "61384984",
-        "url": "https://www.amu.cz",
-        "provider": True,
-    })
-
-    id3b = TermIdentification(taxonomy=taxonomy, slug="60461373")
-    term3b = current_flask_taxonomies.create_term(id3b, extra_data={
-        "title": {
-            "cs": "Vysoká škola chemicko-technologická v Praze",
-            "en": "University of Chemistry and Technology, Prague"
-        },
-        "type": "veřejná VŠ",
-        "aliases": ["VŠCHT"],
-        "related": {
-            "rid": "22000"
-        },
-        "address": "Technická 5, 166 28 Praha 6",
-        "ico": "60461373",
-        "url": "https://www.vscht.cz",
-        "provider": True,
-    })
-
-    # language
-    id4 = TermIdentification(taxonomy=taxonomy, slug="cze")
-    term4 = current_flask_taxonomies.create_term(id4, extra_data={
-        "title": {
-            "cs": "čeština",
-            "en": "Czech"
-        }
-    })
-
-    # contributor
-    id5 = TermIdentification(taxonomy=taxonomy, slug="supervisor")
-    term5 = current_flask_taxonomies.create_term(id5, extra_data={
-        "title": {
-            "cs": "supervizor",
-            "en": "supervisor"
-        },
-        "dataCiteCode": "Supervisor"
-    })
-
-    # funder
-    id6 = TermIdentification(taxonomy=taxonomy, slug="ntk")
-    term6 = current_flask_taxonomies.create_term(id6, extra_data={
-        "title": {
-            "cs": "Národní technická knihovna",
-            "en": "National library of technology"
-        },
-        "funderISVaVaICode": "123456789"
-    })
-
-    # country
-    id7 = TermIdentification(taxonomy=taxonomy, slug="cz")
-    term7 = current_flask_taxonomies.create_term(id7, extra_data={
-        "title": {
-            "cs": "Česko",
-            "en": "Czechia"
-        },
-        "code": {
-            "number": "203",
-            "alpha2": "CZ",
-            "alpha3": "CZE"
-        }
-    })
-
-    # relationship
-    id8 = TermIdentification(taxonomy=taxonomy, slug="isversionof")
-    term8 = current_flask_taxonomies.create_term(id8, extra_data={
-        "title": {
-            "cs": "jeVerzí",
-            "en": "isVersionOf"
-        }
-    })
-
-    # rights
-    id9 = TermIdentification(taxonomy=taxonomy, slug="copyright")
-    term9 = current_flask_taxonomies.create_term(id9, extra_data={
-        "title": {
-            "cs": "Dílo je chráněno podle autorského zákona č. 121/2000 Sb.",
-            "en": "This work is protected under the Copyright Act No. 121/2000 Coll."
-        }
-    })
-
-    # series
-    id9 = TermIdentification(taxonomy=taxonomy, slug="maj")
-    term9 = current_flask_taxonomies.create_term(id9, extra_data={
-        "seriesTitle": "maj",
-        "seriesVolume": "1"
-    })
-
-    # subject
-    id10 = TermIdentification(taxonomy=taxonomy, slug="psh3001")
-    term10 = current_flask_taxonomies.create_term(id10, extra_data={
-        "title": {
-            "cs": "Reynoldsovo číslo",
-            "en": "Reynolds number"
-        },
-        "reletedURI": ["http://psh.techlib.cz/skos/PSH3001"],
-        "DateRevised": "2007-01-26T16:14:37"
-    })
-
-    id11 = TermIdentification(taxonomy=taxonomy, slug="psh3000")
-    term11 = current_flask_taxonomies.create_term(id11, extra_data={
-        "title": {
-            "cs": "turbulentní proudění",
-            "en": "turbulent flow"
-        },
-        "reletedURI": ["http://psh.techlib.cz/skos/PSH3000"],
-        "DateRevised": "2007-01-26T16:14:37"
-    })
-
-    id12 = TermIdentification(taxonomy=taxonomy, slug="D010420")
-    term12 = current_flask_taxonomies.create_term(id12, extra_data={
-        "title": {
-            "cs": "pentany",
-            "en": "Pentanes"
-        },
-        "reletedURI": ["http://www.medvik.cz/link/D010420", "http://id.nlm.nih.gov/mesh/D010420"],
-        "DateRevised": "2007-01-26T16:14:37",
-        "DateCreated": "2007-01-26T16:14:37",
-        "DateDateEstablished": "2007-01-26T16:14:37",
-    })
-
-    db.session.commit()
-
-
-def get_pid():
-    """Generates a new PID for a record."""
-    record_uuid = uuid.uuid4()
-    provider = RecordIdProvider.create(
-        object_type='rec',
-        object_uuid=record_uuid,
-    )
-    return record_uuid, provider.pid.pid_value
-
-
-@pytest.fixture()
-def base_json():
-    return {
-        "accessRights": [{
-            "is_ancestor": False,
-            "links": {
-                "self": "http://127.0.0.1:5000/2.0/taxonomies/test_taxonomy/c-abf2"
-            }
-        }],
-
-        "control_number": "411100",
-        "creator": [
-            {
-                "name": "Daniel Kopecký"
-            }
-        ],
-        "dateIssued": "2010-07-01",
-        "keywords": [
-            {"cs": "1", "en": "1"},
-            {"cs": "2", "en": "2"},
-            {"cs": "3", "en": "3"},
-        ],
-        "language": [
-            {
-                "is_ancestor": False,
-                "links": {
-                    "self": "http://127.0.0.1:5000/2.0/taxonomies/test_taxonomy/cze"
-                }
-            }
-        ],
-        "provider": [
-            {
-                "is_ancestor": False,
-                "links": {
-                    "self": "http://127.0.0.1:5000/2.0/taxonomies/test_taxonomy/61384984"
-                }
-            }
-        ],
-        "resourceType": [
-            {
-                "is_ancestor": False,
-                "links": {
-                    "self": "http://127.0.0.1:5000/2.0/taxonomies/test_taxonomy/bakalarske-prace"
-                }
-            }
-        ],
-        "title": [{
-            "cs": "Testovací záznam",
-            "en": "Test record"
-        }]
-    }
-
-
-@pytest.fixture()
-def base_json_dereferenced():
-    return {
-        'accessRights': [{
-            'is_ancestor': False,
-            'level': 1,
-            'links': {
-                'self': 'http://127.0.0.1:5000/2.0/taxonomies/test_taxonomy/c-abf2'
-            },
-            'relatedURI': {
-                'coar': 'http://purl.org/coar/access_right/c_abf2',
-                'eprint': 'http://purl.org/eprint/accessRights/OpenAccess',
-                'vocabs':
-                    'https://vocabs.acdh.oeaw.ac.at/archeaccessrestrictions/public'
-            },
-            'title': {'cs': 'otevřený přístup', 'en': 'open access'}
-        }],
-        'control_number': '411100',
-        'creator': [{'name': 'Daniel Kopecký'}],
-        'dateIssued': '2010-07-01',
-        'entities': [{
-            'address': 'Malostranské náměstí 259/12, 118 00 Praha 1',
-            'aliases': ['AMU'],
-            'ico': '61384984',
-            'is_ancestor': False,
-            'level': 1,
-            'links': {
-                'self': 'http://127.0.0.1:5000/2.0/taxonomies/test_taxonomy/61384984'
-            },
-            'provider': True,
-            'related': {'rid': '51000'},
-            'title': {
-                'cs': 'Akademie múzických umění v Praze',
-                'en': 'Academy of Performing Arts in Prague'
-            },
-            'type': 'veřejná VŠ',
-            'url': 'https://www.amu.cz'
-        }],
-        'keywords': [{'cs': '1', 'en': '1'},
-                     {'cs': '2', 'en': '2'},
-                     {'cs': '3', 'en': '3'}],
-        'language': [{
-            'is_ancestor': False,
-            'level': 1,
-            'links': {
-                'self': 'http://127.0.0.1:5000/2.0/taxonomies/test_taxonomy/cze'
-            },
-            'title': {'cs': 'čeština', 'en': 'Czech'}
-        }],
-        'provider': [{
-            'address': 'Malostranské náměstí 259/12, 118 00 Praha 1',
-            'aliases': ['AMU'],
-            'ico': '61384984',
-            'is_ancestor': False,
-            'level': 1,
-            'links': {
-                'self': 'http://127.0.0.1:5000/2.0/taxonomies/test_taxonomy/61384984'
-            },
-            'provider': True,
-            'related': {'rid': '51000'},
-            'title': {
-                'cs': 'Akademie múzických umění v Praze',
-                'en': 'Academy of Performing Arts in Prague'
-            },
-            'type': 'veřejná VŠ',
-            'url': 'https://www.amu.cz'
-        }],
-        'resourceType': [{
-            'is_ancestor': False,
-            'level': 1,
-            'links': {
-                'self': 'http://127.0.0.1:5000/2.0/taxonomies/test_taxonomy/bakalarske-prace'
-            },
-            'title': {
-                'cs': 'Bakalářské práce',
-                'en': 'Bachelor’s theses'
-            }
-        }],
-        'title': [{'cs': 'Testovací záznam', 'en': 'Test record'}]
-    }
-
-
-@pytest.fixture
-def community(app, db):
-    comm_data = {
-        # "curation_policy": policy,
-        "id": 'nr',
-        "description": f'Test NR community',
-        # TODO: "logo": "data/community-logos/ecfunded.jpg"
-    }
-    return OARepoCommunity.create(
-        comm_data,
-        id_='nr',
-        title='Test NR community',
-        ctype='other'
-    )
