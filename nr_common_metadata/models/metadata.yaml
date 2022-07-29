@@ -12,7 +12,7 @@ $defs:
         required: true
         oarepo:sample:
           faker: name
-
+        oarepo:ui:
       nameType:
         type: keyword
         enum: [Organizational, Personal]
