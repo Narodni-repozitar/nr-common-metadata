@@ -50,7 +50,3 @@ jobs:
           pip install -r .${{ matrix.requirements-level }}-${{ matrix.python-version }}-requirements.txt
           pip install -e .[tests]
           pip freeze
-
-      - name: Run tests
-        run: |
-          ./run-tests.sh
