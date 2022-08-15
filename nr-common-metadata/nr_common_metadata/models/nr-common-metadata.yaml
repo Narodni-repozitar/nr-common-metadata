@@ -1,0 +1,38 @@
+# Copyright (c) 2022 CESNET
+#
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
+
+oarepo:use: [./nr-common-metadata-model.yaml]
+
+settings:
+  package: 'nr_common_metadata'
+  schema_server: 'local://'
+  python:
+    record_prefix: 'NRCommon'
+    flask-extension-name: 'nr-common-metadadata'
+    ext-class: 'nr_common_metadata.ext.NRCommonMetadataExt'
+    record-class: 'nr_common_metadata.records.api.NRCommonRecord'
+    record-schema-class: nr_common_metadata.services.schema.NRCommonRecordSchema
+
+model:
+  oarepo:marshmallow:
+    generate: true
+
+plugins:
+  builder:
+    disable:
+      - poetry
+      - cookiecutter
+      - invenio_ext_poetry
+      - invenio_sample_app_poetry
+      - invenio_record_metadata_alembic_poetry
+      - invenio_record_metadata_models_poetry
+      - invenio_record_resource_poetry
+      - invenio_record_search_poetry
+      - invenio_record_jsonschemas_poetry
+      - invenio_script_bootstrap
+      - invenio_script_runserver
+      - invenio_script_import_sample_data
+      - script_sample_data
+      - invenio_script_runserver
