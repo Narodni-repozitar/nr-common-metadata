@@ -3,13 +3,10 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-oarepo:use:
-  - hvocabulary
-
 $defs:
-  NRIdentifier:
+  NRAuthorityIdentifier:
     oarepo:ui:
-      search:
+      default:
         component: icon
         dataField: scheme
         iconSet:
@@ -41,7 +38,7 @@ $defs:
   NRAuthority:
     properties:
       fullName:
-        # otazka: moznost duplicity - pridat pole jmeno a prijmeni pro nove zaznamy + do ui generovani fullName podle pravidel
+        # TODO: moznost duplicity - pridat pole jmeno a prijmeni pro nove zaznamy + do ui generovani fullName podle pravidel
         type: keyword
         required: true
         oarepo:sample:
@@ -52,45 +49,62 @@ $defs:
         type: keyword
         enum: [Organizational, Personal]
         oarepo:sample: [Organizational, Personal]
-
       authorityIdentifiers[]:
-        oarepo:use: '#/$defs/NRIdentifier'
+        oarepo:use: '#/$defs/NRAuthorityIdentifier'
         uniqueItems[]: true
         oarepo:ui[]:
-          search:
+          default:
             component: list
             horizontal: true
             separator:
               component: separator
             item:
               #TODO: this reference should be automagically done by model builder
-              oarepo:use: '#/$defs/NRIdentifier/oarepo:ui/search'
+              oarepo:use: '#/$defs/NRAuthorityIdentifier/oarepo:ui/default'
       affiliations[]:
-        oarepo:use: '#/$defs/TaxonomyTerm'
         $description: taxonomie institutions
         oarepo:sample:
           faker: company
+        oarepo:vocabulary:
+          type: affiliation
+          fields: [id, title]
         uniqueItems[]: true
   NRObjectPID:
     $description: Persistent identifier of object
+
     properties:
       identifier:
         type: keyword
         required: true
         oarepo:sample:
           faker: isbn13
+        oarepo:ui:
+          default:
+            component: span
       scheme:
         type: keyword
         required: true
+        oarepo:ui:
+          default:
+            component: icon
+            dataField: scheme
+            iconSet:
+              DOI: icons/identifier/doi.gif
         enum: [DOI, Handle, ISBN, ISSN, RIV]
 
   NRDateOrRange:
     type: keyword
     # TODO: jak validovat a interpretovat tento format (a jak ho pak spravne facetovat)
     format: 'year | yearmonth | date | datetime | year-range | yearmonth-range | date-range | datetime-range'
+    oarepo:ui:
+      default:
+        component: span
 
   NRDate:
     type: keyword
+    oarepo:ui:
+      default:
+        component: span
     # format: [ year | yearmonth | date | datetime ]
 
   NRLocation:
@@ -99,7 +113,12 @@ $defs:
         type: keyword
         required: true
       country:
-        oarepo:use: '#/$defs/TaxonomyTerm'
+        oarepo:use: '#/$defs/NRCountry'
+
+  NRCountry:
+    oarepo:vocabulary:
+      type: country
+      fields: [id, title]
 
   NRLongitude:
     type: number
@@ -111,6 +130,14 @@ $defs:
     minimum: -90
     maximum: 90
 
+  NRAuthorityRole:
+    oarepo:ui:
+      default:
+        component: span
+    oarepo:vocabulary:
+      type: role
+      fields: [id, title]
+
   NRRelatedItem:
     description: linkdata, propojení přidružených dokumentů a datasetů.
 
@@ -119,16 +146,19 @@ $defs:
         description: název propojeného dokumentu
         type: fulltext
         required: true
+        oarepo:ui:
+          default:
+            component: span
 
       itemCreators[]:
-        oarepo:use: '#/$defs/Authority'
+        oarepo:use: '#/$defs/NRAuthority'
         uniqueItems[]: true
 
       itemContributors[]:
-        oarepo:use: '#/$defs/Authority'
+        oarepo:use: '#/$defs/NRAuthority'
         properties:
           role:
-            oarepo:use: '#/$defs/TaxonomyTerm'
+            oarepo:use: '#/$defs/NRAuthorityRole'
         uniqueItems[]: true
 
       itemPIDs[]:
@@ -138,33 +168,61 @@ $defs:
       itemURL:
         type: keyword
         format: URL
+        oarepo:ui:
+          default:
+            component: link
         oarepo:sample:
           faker: url
 
       itemYear:
         type: integer
+        oarepo:ui:
+          default:
+            component: span
 
       itemVolume:
         type: keyword
+        oarepo:ui:
+          default:
+            component: span
 
       itemIssue:
         type: keyword
+        oarepo:ui:
+          default:
+            component: span
 
       itemStartPage:
         type: keyword
+        oarepo:ui:
+          default:
+            component: span
 
       itemEndPage:
         type: keyword
+        oarepo:ui:
+          default:
+            component: span
 
       itemPublisher:
         type: keyword
+        oarepo:ui:
+          default:
+            component: span
 
       itemRelationType:
         description: typ vztahu k původnímu popisovanému dok.
-        oarepo:use: '#/$defs/TaxonomyTerm'
+        oarepo:vocabulary:
+          type: itemRelationType
+          fields: [id, title]
 
       itemResourceType:
-        oarepo:use: '#/$defs/TaxonomyTerm'
+        oarepo:use: '#/$defs/NRResourceType'
+
+  NRResourceType:
+    oarepo:vocabulary:
+      type: resourceType
+      fields: [id, title]
 
   NRFundingReference:
     $description: informace o přidruženém projektu
@@ -172,6 +230,16 @@ $defs:
       MIGRACE NUŠL - protože v datech NUŠL hrozný stav v polích pro poskytovatele.
       u českých projektů na základě prvních dvou znaků v řetězci s identifikátorem
       projektu lze přiřadit poskytovatele.
+    oarepo:ui:
+      default:
+        component: divided-row
+        separator:
+          component: separator
+        items:
+          - component: span
+            dataField: projectID
+          - component: span
+            dataField: projectName
     properties:
       projectID:
         type: keyword
@@ -181,8 +249,13 @@ $defs:
       fundingProgram:
         type: fulltext
       funder:
-        oarepo:use: '#/$defs/TaxonomyTerm'
+        oarepo:use: '#/$defs/NRFunder'
         #required: true
+
+  NRFunder:
+    oarepo:vocabulary:
+      type: funders
+      fields: [id, title]
 
   NRGeoLocation:
     properties:
@@ -193,10 +266,10 @@ $defs:
       geoLocationPoint:
         properties:
           pointLongitude:
-            oarepo:use: '#/$defs/Longitude'
+            oarepo:use: '#/$defs/NRLongitude'
             required: true
           pointLatitude:
-            oarepo:use: '#/$defs/Latitude'
+            oarepo:use: '#/$defs/NRLatitude'
             required: true
 
   NRSystemIdentifier:
@@ -231,5 +304,5 @@ $defs:
         required: true
 
       eventLocation:
-        oarepo:use: '#/$defs/Location'
+        oarepo:use: '#/$defs/NRLocation'
         required: true
