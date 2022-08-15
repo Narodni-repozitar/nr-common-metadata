@@ -162,7 +162,7 @@ $defs:
         uniqueItems[]: true
 
       itemPIDs[]:
-        oarepo:use: '#/$defs/ObjectPID'
+        oarepo:use: '#/$defs/NRObjectPID'
         uniqueItems[]: true
 
       itemURL:
@@ -300,7 +300,7 @@ $defs:
 
       eventDate:
         description: rozsah konání akce/konference -  date or range.
-        oarepo:use: '#/$defs/DateOrRange'
+        oarepo:use: '#/$defs/NRDateOrRange'
         required: true
 
       eventLocation:
