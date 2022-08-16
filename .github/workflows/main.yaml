@@ -66,10 +66,6 @@ jobs:
           docker --version
           docker-compose --version
 
-      - name: Run tests
-        run: |
-          ./run-tests.sh
-
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
