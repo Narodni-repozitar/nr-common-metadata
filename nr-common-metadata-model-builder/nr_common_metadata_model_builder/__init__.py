@@ -2,6 +2,6 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-__version__ = '4.0.0.dev3'
+__version__ = '4.0.0.dev4'
 
 __all__ = ('__version__')

@@ -62,7 +62,7 @@ $defs:
             separator:
               component: separator
             item:
-              #TODO: this reference should be automagically done by model builder
+              # TODO: this reference should be automagically done by model builder
               oarepo:use: '#/$defs/NRAuthorityIdentifier/oarepo:ui/default'
       affiliations[]:
         # taxonomie institutions
@@ -362,208 +362,184 @@ model:
     generate: false
     class: nr_common_metadata.services.schema.NRCommonMetadataSchema
   properties:
-    # TODO: nevyclenit mainTitle ven?
-    title:
-      type: fulltext # TODO: title will be multilangtext
-      # Main (original) title of the object/work.
-      required: true
-
-    additionalTitles[]:
-      # Additional titles of the object/work such as subtitle, translatedTitle and alternativeTitle.
-      uniqueItems[]: true
+    metadata:
       properties:
-        # TODO: zvazit, jestli preci jenom neprejit na pole extenzi langstringu, abychom byli datacite (a rdm)
-        # primo kompatibilni
+        # TODO: nevyclenit mainTitle ven?
         title:
+          type: fulltext # TODO: title will be multilangtext
+          # Main (original) title of the object/work.
+          required: true
+
+        additionalTitles[]:
+          # Additional titles of the object/work such as subtitle, translatedTitle and alternativeTitle.
+          uniqueItems[]: true
+          properties:
+            # TODO: zvazit, jestli preci jenom neprejit na pole extenzi langstringu, abychom byli datacite (a rdm)
+            # primo kompatibilni
+            title:
+              type: multilingual
+              required: true
+            titleType:
+              type: keyword
+              required: true
+              enum: [translatedTitle, alternativeTitle, subtitle, other]
+
+        creators[]:
+          oarepo:use: '#/$defs/NRAuthority'
+          minItems[]: 1
+          uniqueItems[]: true
+          required[]: true
+
+        contributors[]:
+          oarepo:use: '#/$defs/NRAuthority'
+          uniqueItems[]: true
+          properties:
+            role:
+              oarepo:use: '#/$defs/NRAuthorityRole'
+
+        resourceType:
+          # Taxonomy driven typology of objects that's possible to store in the repository
+          oarepo:use: '#/$defs/NRResourceType'
+          required: true
+
+        dateAvailable:
+          # The date the resource is publicly available in a repository.
+          #
+          # týká se dokumentu, nikoliv metadat!!!
+          # stejně jako pro data, budou se přes něj řídit přístupy - embargo
+          oarepo:use: '#/$defs/NRDate'
+          oarepo:sample:
+            faker: date
+
+        dateModified:
+          # The date of the last update to the resource, not metadata
+          #
+          # týká se dokumentu/obsahu, nikoliv metadat!!!
+          # neukazuje se ve vkládacím formuláři. jen při editaci záznamu!
+          oarepo:use: '#/$defs/NRDate'
+          oarepo:sample:
+            faker: date
+
+        subjects[]:
+          # subject by vocabularies or free-form keywords created by author(s)
+          oarepo:use: '#/$defs/NRSubject'
+          uniqueItems[]: true
+
+        publishers[]:
+          # volný zápis vydavatele
+          type: fulltext
+          uniqueItems[]: true
+          oarepo:sample:
+            faker: company
+
+        subjectCategories[]:
+          # FRASCATI oborové třídění - může sloužit jako podklad pro oborové filtrování
+          oarepo:use: '#/$defs/NRSubjectCategory'
+          uniqueItems[]: true
+
+        languages[]:
+          # ISO 639-2 B in slug, ISO 639-2 T in alias, ISO 639-1 as Alpha2.
+          oarepo:use: '#/$defs/NRLanguage'
+          minItems[]: 1
+          required: true
+          uniqueItems[]: true
+
+        notes[]:
+          # Free-form note for any comment that couldn't be inserted in any other fields.
+          type: fulltext
+          uniqueItems[]: true
+
+        abstract:
+          # Multilingual abstract description for record (may contain HTML).
           type: multilingual
-          required: true
-        titleType:
+
+        methods:
+          # Multilingual methodology employed for the study or research.(may contain HTML)
+          type: multilingual
+
+        technicalInfo:
+          # Multilingual detailed information that may be associated with
+          # design, implementation, operation, use, and/or maintenance of a process
+          # or system.(may contain HTML)
+          type: multilingual
+
+        rights[]:
+          # Any license or copyright information for this resource. Taxonomy field.
+          oarepo:use: '#/$defs/NRAccessRights'
+          uniqueItems[]: true
+
+        accessRights:
+          # Taxonomy driven list of possible access to the document - open,
+          # embargoed, restirected and metadata only access. Based on COAR
+          # vocabulary - http://vocabularies.coar-repositories.org/documentation/access_rights/",
+          oarepo:use: '#/$defs/NRAccessRights'
+
+        relatedItems[]:
+          oarepo:use: '#/$defs/NRRelatedItem'
+          uniqueItems[]: true
+
+        fundingReferences[]:
+          oarepo:use: '#/$defs/NRFundingReference'
+          uniqueItems[]: true
+
+        version:
+          # verze obsahu, nikoliv záznamu. hodnota ve formuláři není editovatelná.
           type: keyword
-          required: true
-          enum: [translatedTitle, alternativeTitle, subtitle, other]
+          oarepo:sample: ['1.0', '1.1', '2.0', '2.1', '2.2']
 
-    creators[]:
-      oarepo:use: '#/$defs/NRAuthority'
-      minItems[]: 1
-      uniqueItems[]: true
-      required[]: true
+        geoLocations[]:
+          oarepo:use: '#/$defs/NRGeoLocation'
+          uniqueItems[]: true
 
-    contributors[]:
-      oarepo:use: '#/$defs/NRAuthority'
-      uniqueItems[]: true
-      properties:
-        role:
-          oarepo:use: '#/$defs/NRAuthorityRole'
+        accessibility:
+          # textové vyjádření dostupnosti souborů, primárně pro harvestované zdroje.
+          # nastavuje se pro každý zdroj zvlášť během konverze podle dostupnosti souborů
+          # ve zdrojovém systému. ve vkládacím formuláři by bylo pouze pro restricted access
+          type: multilingual
 
-    resourceType:
-      # Taxonomy driven typology of objects that's possible to store in the repository
-      oarepo:use: '#/$defs/NRResourceType'
-      required: true
+        series[]:
+          # edice; tématicky sdružuje podobné věci, nemusí se jednat o pravou edici,
+          # ale tagování/grupování podobných záznamů
+          uniqueItems[]: true
 
-    # TODO: documents specific
-    # dateIssued:
-    #   # The date the resource is originaly published by publisher, in
-    #   # case of grey literature made publicly available by the institution.
-    #   #
-    #   # týká se dokumentu, nikoliv metadat!!! Stejně jako pro data, budou se přes něj řídit přístupy - embargo
-    #   oarepo:use: '#/$defs/NRDate'
-    #   required: true
-    #   oarepo:sample:
-    #     faker: date
+          properties:
+            seriesTitle:
+              type: keyword
+              required: true
+              $comment: našeptávač již uložených hodnot
+              oarepo:sample: ['series A', 'series B', 'series C']
+            seriesVolume:
+              type: keyword
+              oarepo:sample: ['1', '2', '3', '4']
 
-    dateAvailable:
-      # The date the resource is publicly available in a repository.
-      #
-      # týká se dokumentu, nikoliv metadat!!!
-      # stejně jako pro data, budou se přes něj řídit přístupy - embargo
-      oarepo:use: '#/$defs/NRDate'
-      oarepo:sample:
-        faker: date
+        externalLocation:
+          # externí umístění dokumentu (mimo repozitáře), formát URL
+          properties:
+            externalLocationURL:
+              type: keyword
+              format: URL
+              required: true
+              oarepo:sample:
+                faker: url
 
-    dateModified:
-      # The date of the last update to the resource, not metadata
-      #
-      # týká se dokumentu/obsahu, nikoliv metadat!!!
-      # neukazuje se ve vkládacím formuláři. jen při editaci záznamu!
-      oarepo:use: '#/$defs/NRDate'
-      oarepo:sample:
-        faker: date
+            externalLocationNote:
+              type: fulltext
 
-    subjects[]:
-      # subject by vocabularies or free-form keywords created by author(s)
-      oarepo:use: '#/$defs/NRSubject'
-      uniqueItems[]: true
+        originalRecord:
+          # odkaz na původní záznam, zobrazovat koncovému uživateli v detailu záznamu
+          # jako původní místo uložení. objevuje se jen u harvestu
+          type: keyword
+          format: URL
+          oarepo:sample:
+            faker: url
 
-    publishers[]:
-      # volný zápis vydavatele
-      type: fulltext
-      uniqueItems[]: true
-      oarepo:sample:
-        faker: company
+        objectIdentifiers[]:
+          # Persistent identifier/s of object as ISBN, DOI, etc. + assigned by National Repository.
+          oarepo:use: '#/$defs/NRObjectPID'
+          uniqueItems[]: true
 
-    subjectCategories[]:
-      # FRASCATI oborové třídění - může sloužit jako podklad pro oborové filtrování
-      oarepo:use: '#/$defs/NRSubjectCategory'
-      uniqueItems[]: true
+        systemIdentifiers[]:
+          oarepo:use: '#/$defs/NRSystemIdentifier'
 
-    languages[]:
-      # ISO 639-2 B in slug, ISO 639-2 T in alias, ISO 639-1 as Alpha2.
-      oarepo:use: '#/$defs/NRLanguage'
-      minItems[]: 1
-      required: true
-      uniqueItems[]: true
-
-    notes[]:
-      # Free-form note for any comment that couldn't be inserted in any other fields.
-      type: fulltext
-      uniqueItems[]: true
-
-    abstract:
-      # Multilingual abstract description for record (may contain HTML).
-      type: multilingual
-
-    methods:
-      # Multilingual methodology employed for the study or research.(may contain HTML)
-      type: multilingual
-
-    technicalInfo:
-      # Multilingual detailed information that may be associated with
-      # design, implementation, operation, use, and/or maintenance of a process
-      # or system.(may contain HTML)
-      type: multilingual
-
-    rights[]:
-      # Any license or copyright information for this resource. Taxonomy field.
-      oarepo:use: '#/$defs/NRAccessRights'
-      uniqueItems[]: true
-
-    accessRights:
-      # Taxonomy driven list of possible access to the document - open,
-      # embargoed, restirected and metadata only access. Based on COAR
-      # vocabulary - http://vocabularies.coar-repositories.org/documentation/access_rights/",
-      oarepo:use: '#/$defs/NRAccessRights'
-
-    relatedItems[]:
-      oarepo:use: '#/$defs/NRRelatedItem'
-      uniqueItems[]: true
-
-    fundingReferences[]:
-      oarepo:use: '#/$defs/NRFundingReference'
-      uniqueItems[]: true
-
-    version:
-      # verze obsahu, nikoliv záznamu. hodnota ve formuláři není editovatelná.
-      type: keyword
-      oarepo:sample: ['1.0', '1.1', '2.0', '2.1', '2.2']
-
-    geoLocations[]:
-      oarepo:use: '#/$defs/NRGeoLocation'
-      uniqueItems[]: true
-
-    # TODO: patri do dokumentu
-    # accessibility:
-    #
-    #   # textové vyjádření dostupnosti souborů, primárně pro harvestované zdroje.
-    #   # nastavuje se pro každý zdroj zvlášť během konverze podle dostupnosti souborů
-    #   # ve zdrojovém systému. ve vkládacím formuláři by bylo pouze pro restricted access
-    #   type: multilingual
-
-    # TODO: patri do dokumentu
-    # series[]:
-    #   # edice; tématicky sdružuje podobné věci, nemusí se jednat o pravou edici,
-    #   # ale tagování/grupování podobných záznamů
-    #   uniqueItems[]: true
-
-    #   properties:
-    #     seriesTitle:
-    #       type: keyword
-    #       required: true
-    #       $comment: našeptávač již uložených hodnot
-    #       oarepo:sample: ['series A', 'series B', 'series C']
-    #     seriesVolume:
-    #       type: keyword
-    #       oarepo:sample: ['1', '2', '3', '4']
-
-    # TODO: patri do dokumentu
-    # externalLocation:
-    #   # externí umístění dokumentu (mimo repozitáře), formát URL
-
-    #   properties:
-    #     externalLocationURL:
-    #       type: keyword
-    #       format: URL
-    #       required: true
-    #       oarepo:sample:
-    #         faker: url
-
-    #     externalLocationNote:
-    #       type: fulltext
-
-    # TODO: patri do dokumentu
-    # extent:
-    #   # Extent of the work. If it is not paged, then it takes over number
-    #   # of pages of the entire pdf.
-    #   type: keyword
-
-    originalRecord:
-      # odkaz na původní záznam, zobrazovat koncovému uživateli v detailu záznamu
-      # jako původní místo uložení. objevuje se jen u harvestu
-      type: keyword
-      format: URL
-      oarepo:sample:
-        faker: url
-
-    objectIdentifiers[]:
-      # Persistent identifier/s of object as ISBN, DOI, etc. + assigned by National Repository.
-      oarepo:use: '#/$defs/NRObjectPID'
-      uniqueItems[]: true
-
-    systemIdentifiers[]:
-      oarepo:use: '#/$defs/NRSystemIdentifier'
-
-    events[]:
-      oarepo:use: '#/$defs/NREvent'
-    # TODO: patri do dokumentu
-    # collections[]:
-    #   # mapování institucí z nušl, dočasné
-    #   type: keyword
+        events[]:
+          oarepo:use: '#/$defs/NREvent'

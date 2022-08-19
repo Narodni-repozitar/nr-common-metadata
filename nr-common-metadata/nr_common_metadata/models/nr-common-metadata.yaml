@@ -19,6 +19,12 @@ model:
   oarepo:marshmallow:
     generate: true
 
+oarepo:ui:
+  default:
+    component: column
+    items:
+      - oarepo:use: '#/model/properties/metadata/properties/title/oarepo:ui/default'
+
 plugins:
   builder:
     disable:

@@ -5,6 +5,6 @@
 
 from .ext import NRCommonMetadataExt
 
-__version__ = '4.0.0.dev3'
+__version__ = '4.0.0.dev4'
 
 __all__ = ('__version__', 'NRCommonMetadataExt')
