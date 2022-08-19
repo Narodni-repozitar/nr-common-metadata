@@ -366,8 +366,7 @@ model:
       properties:
         # TODO: nevyclenit mainTitle ven?
         title:
-          type: fulltext # TODO: title will be multilangtext
-          # Main (original) title of the object/work.
+          type: multilingual # Main (original) title of the object/work.
           required: true
 
         additionalTitles[]:
