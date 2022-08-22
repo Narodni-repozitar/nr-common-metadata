@@ -7,7 +7,7 @@
 
 set -e
 
-cp -r nr-common-metadata/nr_common_metadata/models/*yaml nr-common-metadata-model-builder/nr_common_metadata_model_builder/models/
+cp -r nr-common-metadata/nr_common_metadata/models/* nr-common-metadata-model-builder/nr_common_metadata_model_builder/models/
 
 test -d dist && rm -rf dist
 
