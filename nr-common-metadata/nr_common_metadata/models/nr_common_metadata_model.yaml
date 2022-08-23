@@ -3,7 +3,7 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-oarepo:use: [invenio]
+oarepo:use: [invenio, i18n]
 
 $defs:
   NRAuthorityIdentifier:
@@ -263,7 +263,7 @@ $defs:
         type: keyword
         oarepo:sample: ['keyword', 'czenas', 'psh']
       subject:
-        type: i18n
+        type: i18nStr
         required: true
       valueURI:
         type: keyword
