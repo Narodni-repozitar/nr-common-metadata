@@ -263,7 +263,7 @@ $defs:
         type: keyword
         oarepo:sample: ['keyword', 'czenas', 'psh']
       subject:
-        type: multilingual
+        type: i18n
         required: true
       valueURI:
         type: keyword
@@ -366,7 +366,7 @@ model:
       properties:
         # TODO: nevyclenit mainTitle ven?
         title:
-          type: multilingual # Main (original) title of the object/work.
+          type: i18nStr # Main (original) title of the object/work.
           required: true
 
         additionalTitles[]:
@@ -376,7 +376,7 @@ model:
             # TODO: zvazit, jestli preci jenom neprejit na pole extenzi langstringu, abychom byli datacite (a rdm)
             # primo kompatibilni
             title:
-              type: multilingual
+              type: i18nStr
               required: true
             titleType:
               type: keyword
@@ -449,18 +449,18 @@ model:
           uniqueItems[]: true
 
         abstract:
-          # Multilingual abstract description for record (may contain HTML).
-          type: multilingual
+          # i18nStr abstract description for record (may contain HTML).
+          type: i18nStr
 
         methods:
-          # Multilingual methodology employed for the study or research.(may contain HTML)
-          type: multilingual
+          # i18nStr methodology employed for the study or research.(may contain HTML)
+          type: i18nStr
 
         technicalInfo:
-          # Multilingual detailed information that may be associated with
+          # i18nStr detailed information that may be associated with
           # design, implementation, operation, use, and/or maintenance of a process
           # or system.(may contain HTML)
-          type: multilingual
+          type: i18nStr
 
         rights[]:
           # Any license or copyright information for this resource. Taxonomy field.
@@ -494,7 +494,7 @@ model:
           # textové vyjádření dostupnosti souborů, primárně pro harvestované zdroje.
           # nastavuje se pro každý zdroj zvlášť během konverze podle dostupnosti souborů
           # ve zdrojovém systému. ve vkládacím formuláři by bylo pouze pro restricted access
-          type: multilingual
+          type: i18nStr
 
         series[]:
           # edice; tématicky sdružuje podobné věci, nemusí se jednat o pravou edici,
