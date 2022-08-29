@@ -157,12 +157,19 @@ $defs:
       itemCreators[]:
         oarepo:use: '#/$defs/NRAuthority'
         uniqueItems[]: true
+        properties:
+          affiliations[]:
+            oarepo:vocabulary:
+              name: item-creator-affiliations
 
       itemContributors[]:
         oarepo:use: '#/$defs/NRAuthority'
         properties:
           role:
             oarepo:use: '#/$defs/NRAuthorityRole'
+          affiliations[]:
+            oarepo:vocabulary:
+              name: item-creator-affiliations
         uniqueItems[]: true
 
       itemPIDs[]:
@@ -388,6 +395,10 @@ model:
           minItems[]: 1
           uniqueItems[]: true
           required[]: true
+          properties:
+            affiliations[]:
+              oarepo:vocabulary:
+                name: creator_affiliations
 
         contributors[]:
           oarepo:use: '#/$defs/NRAuthority'
@@ -395,6 +406,10 @@ model:
           properties:
             role:
               oarepo:use: '#/$defs/NRAuthorityRole'
+          properties:
+            affiliations[]:
+              oarepo:vocabulary:
+                name: contributor_affiliations
 
         resourceType:
           # Taxonomy driven typology of objects that's possible to store in the repository
