@@ -520,7 +520,7 @@ model:
             seriesTitle:
               type: keyword
               required: true
-              $comment: našeptávač již uložených hodnot
+              # našeptávač již uložených hodnot
               oarepo:sample: ['series A', 'series B', 'series C']
             seriesVolume:
               type: keyword
