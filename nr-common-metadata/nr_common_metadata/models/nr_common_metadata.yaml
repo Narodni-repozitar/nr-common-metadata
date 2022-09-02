@@ -7,7 +7,7 @@ oarepo:use: [nr-common-metadata-model]
 
 settings:
   package: 'nr_common_metadata'
-  schema_server: 'local://'
+  schema-server: 'local://'
   python:
     record-prefix: 'NRCommon'
     flask-extension-name: 'nr-common-metadadata'
