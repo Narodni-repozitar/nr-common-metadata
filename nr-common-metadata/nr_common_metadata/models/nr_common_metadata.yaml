@@ -9,7 +9,7 @@ settings:
   package: 'nr_common_metadata'
   schema_server: 'local://'
   python:
-    record_prefix: 'NRCommon'
+    record-prefix: 'NRCommon'
     flask-extension-name: 'nr-common-metadadata'
     ext-class: 'nr_common_metadata.ext.NRCommonMetadataExt'
     record-class: 'nr_common_metadata.records.api.NRCommonRecord'
