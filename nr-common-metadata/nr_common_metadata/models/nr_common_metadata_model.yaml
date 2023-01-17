@@ -3,11 +3,11 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-oarepo:use: [invenio]
+^use: [invenio]
 
 $defs:
   NRAuthorityIdentifier:
-    oarepo:ui:
+    ^ui:
       default:
         component: icon
         dataField: scheme
@@ -19,7 +19,7 @@ $defs:
       identifier:
         type: keyword
         required: true
-        oarepo:sample:
+        ^sample:
           faker: isbn13
       scheme:
         type: keyword
@@ -44,18 +44,18 @@ $defs:
         # TODO: moznost duplicity - pridat pole jmeno a prijmeni pro nove zaznamy + do ui generovani fullName podle pravidel
         type: keyword
         required: true
-        oarepo:sample:
+        ^sample:
           faker: name
-        oarepo:ui:
+        ^ui:
           component: span
       nameType:
         type: keyword
         enum: [Organizational, Personal]
-        oarepo:sample: [Organizational, Personal]
+        ^sample: [Organizational, Personal]
       authorityIdentifiers[]:
-        oarepo:use: '#/$defs/NRAuthorityIdentifier'
+        ^use: '#/$defs/NRAuthorityIdentifier'
         uniqueItems[]: true
-        oarepo:ui[]:
+        ^ui[]:
           default:
             component: list
             horizontal: true
@@ -63,12 +63,12 @@ $defs:
               component: separator
             item:
               # TODO: this reference should be automagically done by model builder
-              oarepo:use: '#/$defs/NRAuthorityIdentifier/oarepo:ui/default'
+              ^use: '#/$defs/NRAuthorityIdentifier/^ui/default'
       affiliations[]:
         # taxonomie institutions
-        oarepo:sample:
+        ^sample:
           faker: company
-        oarepo:vocabulary:
+        ^vocabulary:
           type: affiliation
           fields: [id, title]
         uniqueItems[]: true
@@ -80,15 +80,15 @@ $defs:
       identifier:
         type: keyword
         required: true
-        oarepo:sample:
+        ^sample:
           faker: isbn13
-        oarepo:ui:
+        ^ui:
           default:
             component: span
       scheme:
         type: keyword
         required: true
-        oarepo:ui:
+        ^ui:
           default:
             component: icon
             dataField: scheme
@@ -100,13 +100,13 @@ $defs:
     type: keyword
     # TODO: jak validovat a interpretovat tento format (a jak ho pak spravne facetovat)
     format: 'year | yearmonth | date | datetime | year-range | yearmonth-range | date-range | datetime-range'
-    oarepo:ui:
+    ^ui:
       default:
         component: span
 
   NRDate:
     type: keyword
-    oarepo:ui:
+    ^ui:
       default:
         component: span
     # format: [ year | yearmonth | date | datetime ]
@@ -117,10 +117,10 @@ $defs:
         type: keyword
         required: true
       country:
-        oarepo:use: '#/$defs/NRCountry'
+        ^use: '#/$defs/NRCountry'
 
   NRCountry:
-    oarepo:vocabulary:
+    ^vocabulary:
       type: country
       fields: [id, title]
 
@@ -135,10 +135,10 @@ $defs:
     maximum: 90
 
   NRAuthorityRole:
-    oarepo:ui:
+    ^ui:
       default:
         component: span
-    oarepo:vocabulary:
+    ^vocabulary:
       type: role
       fields: [id, title]
 
@@ -150,91 +150,91 @@ $defs:
         description: název propojeného dokumentu
         type: fulltext
         required: true
-        oarepo:ui:
+        ^ui:
           default:
             component: span
 
       itemCreators[]:
-        oarepo:use: '#/$defs/NRAuthority'
+        ^use: '#/$defs/NRAuthority'
         uniqueItems[]: true
         properties:
           affiliations[]:
-            oarepo:vocabulary:
+            ^vocabulary:
               name: item-creator-affiliations
 
       itemContributors[]:
-        oarepo:use: '#/$defs/NRAuthority'
+        ^use: '#/$defs/NRAuthority'
         properties:
           role:
-            oarepo:use: '#/$defs/NRAuthorityRole'
+            ^use: '#/$defs/NRAuthorityRole'
           affiliations[]:
-            oarepo:vocabulary:
+            ^vocabulary:
               name: item-creator-affiliations
         uniqueItems[]: true
 
       itemPIDs[]:
-        oarepo:use: '#/$defs/NRObjectPID'
+        ^use: '#/$defs/NRObjectPID'
         uniqueItems[]: true
 
       itemURL:
         type: keyword
         format: URL
-        oarepo:ui:
+        ^ui:
           default:
             component: link
-        oarepo:sample:
+        ^sample:
           faker: url
 
       itemYear:
         type: integer
-        oarepo:ui:
+        ^ui:
           default:
             component: span
 
       itemVolume:
         type: keyword
-        oarepo:ui:
+        ^ui:
           default:
             component: span
 
       itemIssue:
         type: keyword
-        oarepo:ui:
+        ^ui:
           default:
             component: span
 
       itemStartPage:
         type: keyword
-        oarepo:ui:
+        ^ui:
           default:
             component: span
 
       itemEndPage:
         type: keyword
-        oarepo:ui:
+        ^ui:
           default:
             component: span
 
       itemPublisher:
         type: keyword
-        oarepo:ui:
+        ^ui:
           default:
             component: span
 
       itemRelationType:
         description: typ vztahu k původnímu popisovanému dok.
-        oarepo:vocabulary:
+        ^vocabulary:
           type: itemRelationType
           fields: [id, title]
 
       itemResourceType:
-        oarepo:use: '#/$defs/NRResourceType'
+        ^use: '#/$defs/NRResourceType'
 
   NRResourceType:
-    oarepo:vocabulary:
+    ^vocabulary:
       type: resourceType
       fields: [id, title]
-    oarepo:sample: ['Bakalářská práce', 'Diplomová práce', 'Dataset']
+    ^sample: ['Bakalářská práce', 'Diplomová práce', 'Dataset']
 
   NRFundingReference:
     # informace o přidruženém projektu
@@ -242,7 +242,7 @@ $defs:
     # MIGRACE NUŠL - protože v datech NUŠL hrozný stav v polích pro poskytovatele.
     # u českých projektů na základě prvních dvou znaků v řetězci s identifikátorem
     # projektu lze přiřadit poskytovatele.
-    oarepo:ui:
+    ^ui:
       default:
         component: divided-row
         separator:
@@ -261,33 +261,33 @@ $defs:
       fundingProgram:
         type: fulltext
       funder:
-        oarepo:use: '#/$defs/NRFunder'
+        ^use: '#/$defs/NRFunder'
         #required: true
 
   NRSubject:
     properties:
       subjectScheme:
         type: keyword
-        oarepo:sample: ['keyword', 'czenas', 'psh']
+        ^sample: ['keyword', 'czenas', 'psh']
       subject:
         type: i18nStr
         required: true
       valueURI:
         type: keyword
-        oarepo:sample:
+        ^sample:
           faker: url
       classificationCode:
         type: keyword
 
   NRSubjectCategory:
-    oarepo:vocabulary:
+    ^vocabulary:
       type: subjectCategories
       fields: [id, title]
-    oarepo:sample:
+    ^sample:
       ['Pravděpodobnost a statistika', 'Matematika', 'Chemické vědy']
 
   NRFunder:
-    oarepo:vocabulary:
+    ^vocabulary:
       type: funders
       fields: [id, title]
 
@@ -300,10 +300,10 @@ $defs:
       geoLocationPoint:
         properties:
           pointLongitude:
-            oarepo:use: '#/$defs/NRLongitude'
+            ^use: '#/$defs/NRLongitude'
             required: true
           pointLatitude:
-            oarepo:use: '#/$defs/NRLatitude'
+            ^use: '#/$defs/NRLatitude'
             required: true
 
   NRSystemIdentifier:
@@ -333,24 +333,24 @@ $defs:
 
       eventDate:
         # rozsah konání akce/konference -  date or range.
-        oarepo:use: '#/$defs/NRDateOrRange'
+        ^use: '#/$defs/NRDateOrRange'
         required: true
 
       eventLocation:
-        oarepo:use: '#/$defs/NRLocation'
+        ^use: '#/$defs/NRLocation'
         required: true
 
   NRLanguage:
-    oarepo:vocabulary:
+    ^vocabulary:
       type: languages
       fields: [id, title]
-    oarepo:sample: ['cs', 'en', 'de', 'fr', 'it']
+    ^sample: ['cs', 'en', 'de', 'fr', 'it']
 
   NRLicense:
-    oarepo:vocabulary:
+    ^vocabulary:
       type: licenses
       fields: [id, title]
-    oarepo:sample:
+    ^sample:
       - 'CC BY'
       - 'CC BY-SA'
       - 'CC BY-NC'
@@ -359,21 +359,20 @@ $defs:
       - 'CC BY-NC-ND'
 
   NRAccessRights:
-    oarepo:vocabulary:
+    ^vocabulary:
       type: accessRights
       fields: [id, title]
-    oarepo:sample: [open, embargoed, restricted, 'metadata only']
+    ^sample: [open, embargoed, restricted, 'metadata only']
 
 model:
-  oarepo:marshmallow:
+  ^marshmallow:
     generate: false
     class: nr_common_metadata.services.schema.NRCommonMetadataSchema
   properties:
     metadata:
       properties:
-        # TODO: nevyclenit mainTitle ven?
         title:
-          type: i18nStr # Main (original) title of the object/work.
+          type: fulltext+keyword # Main (original) title of the object/work.
           required: true
 
         additionalTitles[]:
@@ -391,29 +390,28 @@ model:
               enum: [translatedTitle, alternativeTitle, subtitle, other]
 
         creators[]:
-          oarepo:use: '#/$defs/NRAuthority'
+          ^use: '#/$defs/NRAuthority'
           minItems[]: 1
           uniqueItems[]: true
           required[]: true
           properties:
             affiliations[]:
-              oarepo:vocabulary:
+              ^vocabulary:
                 name: creator_affiliations
 
         contributors[]:
-          oarepo:use: '#/$defs/NRAuthority'
+          ^use: '#/$defs/NRAuthority'
           uniqueItems[]: true
           properties:
             role:
-              oarepo:use: '#/$defs/NRAuthorityRole'
-          properties:
+              ^use: '#/$defs/NRAuthorityRole'
             affiliations[]:
-              oarepo:vocabulary:
+              ^vocabulary:
                 name: contributor_affiliations
 
         resourceType:
           # Taxonomy driven typology of objects that's possible to store in the repository
-          oarepo:use: '#/$defs/NRResourceType'
+          ^use: '#/$defs/NRResourceType'
           required: true
 
         dateAvailable:
@@ -421,8 +419,8 @@ model:
           #
           # týká se dokumentu, nikoliv metadat!!!
           # stejně jako pro data, budou se přes něj řídit přístupy - embargo
-          oarepo:use: '#/$defs/NRDate'
-          oarepo:sample:
+          ^use: '#/$defs/NRDate'
+          ^sample:
             faker: date
 
         dateModified:
@@ -430,30 +428,30 @@ model:
           #
           # týká se dokumentu/obsahu, nikoliv metadat!!!
           # neukazuje se ve vkládacím formuláři. jen při editaci záznamu!
-          oarepo:use: '#/$defs/NRDate'
-          oarepo:sample:
+          ^use: '#/$defs/NRDate'
+          ^sample:
             faker: date
 
         subjects[]:
           # subject by vocabularies or free-form keywords created by author(s)
-          oarepo:use: '#/$defs/NRSubject'
+          ^use: '#/$defs/NRSubject'
           uniqueItems[]: true
 
         publishers[]:
           # volný zápis vydavatele
           type: fulltext
           uniqueItems[]: true
-          oarepo:sample:
+          ^sample:
             faker: company
 
         subjectCategories[]:
           # FRASCATI oborové třídění - může sloužit jako podklad pro oborové filtrování
-          oarepo:use: '#/$defs/NRSubjectCategory'
+          ^use: '#/$defs/NRSubjectCategory'
           uniqueItems[]: true
 
         languages[]:
           # ISO 639-2 B in slug, ISO 639-2 T in alias, ISO 639-1 as Alpha2.
-          oarepo:use: '#/$defs/NRLanguage'
+          ^use: '#/$defs/NRLanguage'
           minItems[]: 1
           required: true
           uniqueItems[]: true
@@ -479,30 +477,30 @@ model:
 
         rights[]:
           # Any license or copyright information for this resource. Taxonomy field.
-          oarepo:use: '#/$defs/NRAccessRights'
+          ^use: '#/$defs/NRAccessRights'
           uniqueItems[]: true
 
         accessRights:
           # Taxonomy driven list of possible access to the document - open,
           # embargoed, restirected and metadata only access. Based on COAR
           # vocabulary - http://vocabularies.coar-repositories.org/documentation/access_rights/",
-          oarepo:use: '#/$defs/NRAccessRights'
+          ^use: '#/$defs/NRAccessRights'
 
         relatedItems[]:
-          oarepo:use: '#/$defs/NRRelatedItem'
+          ^use: '#/$defs/NRRelatedItem'
           uniqueItems[]: true
 
         fundingReferences[]:
-          oarepo:use: '#/$defs/NRFundingReference'
+          ^use: '#/$defs/NRFundingReference'
           uniqueItems[]: true
 
         version:
           # verze obsahu, nikoliv záznamu. hodnota ve formuláři není editovatelná.
           type: keyword
-          oarepo:sample: ['1.0', '1.1', '2.0', '2.1', '2.2']
+          ^sample: ['1.0', '1.1', '2.0', '2.1', '2.2']
 
         geoLocations[]:
-          oarepo:use: '#/$defs/NRGeoLocation'
+          ^use: '#/$defs/NRGeoLocation'
           uniqueItems[]: true
 
         accessibility:
@@ -521,10 +519,10 @@ model:
               type: keyword
               required: true
               # našeptávač již uložených hodnot
-              oarepo:sample: ['series A', 'series B', 'series C']
+              ^sample: ['series A', 'series B', 'series C']
             seriesVolume:
               type: keyword
-              oarepo:sample: ['1', '2', '3', '4']
+              ^sample: ['1', '2', '3', '4']
 
         externalLocation:
           # externí umístění dokumentu (mimo repozitáře), formát URL
@@ -533,7 +531,7 @@ model:
               type: keyword
               format: URL
               required: true
-              oarepo:sample:
+              ^sample:
                 faker: url
 
             externalLocationNote:
@@ -544,16 +542,16 @@ model:
           # jako původní místo uložení. objevuje se jen u harvestu
           type: keyword
           format: URL
-          oarepo:sample:
+          ^sample:
             faker: url
 
         objectIdentifiers[]:
           # Persistent identifier/s of object as ISBN, DOI, etc. + assigned by National Repository.
-          oarepo:use: '#/$defs/NRObjectPID'
+          ^use: '#/$defs/NRObjectPID'
           uniqueItems[]: true
 
         systemIdentifiers[]:
-          oarepo:use: '#/$defs/NRSystemIdentifier'
+          ^use: '#/$defs/NRSystemIdentifier'
 
         events[]:
-          oarepo:use: '#/$defs/NREvent'
+          ^use: '#/$defs/NREvent'
