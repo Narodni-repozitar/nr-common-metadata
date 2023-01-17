@@ -40,7 +40,8 @@ $defs:
             DOI,
           ]
         ^hint.en: |
-          Please choose one of the identifiers types. If you can not find your type, contact the support team at support@repo.cz.
+          Please choose one of the identifiers types. 
+          If you can not find your type, contact the support team at support@repo.cz.
 
   NRAuthority:
     properties:
