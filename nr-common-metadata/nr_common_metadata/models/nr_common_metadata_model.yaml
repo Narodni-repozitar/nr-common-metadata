@@ -19,6 +19,8 @@ $defs:
       identifier:
         type: keyword
         required: true
+        ^label.cs: Identifikátor
+        ^label.en: Identifier
         ^sample:
           faker: isbn13
       scheme:
@@ -37,6 +39,8 @@ $defs:
             ICO,
             DOI,
           ]
+        ^hint.en: |
+          Please choose one of the identifiers types. If you can not find your type, contact the support team at support@repo.cz.
 
   NRAuthority:
     properties:
